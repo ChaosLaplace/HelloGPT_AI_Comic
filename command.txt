@@ -1,0 +1,10 @@
+初始化專案
+composer create-project laravel/laravel 專案名稱 --prefer-dist
+
+執行專案
+php artisan serve
+
+創建 API
+php artisan make:controller UserController
+php artisan make:controller BookController
+php artisan make:controller ToolController
