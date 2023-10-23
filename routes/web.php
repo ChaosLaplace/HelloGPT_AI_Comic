@@ -57,15 +57,12 @@ Route::group(['prefix' => 'api'], function () {
         // 取得 CSRF
         Route::get('getCSRF', [ToolController::class, 'getCSRF']);
         // 3.1 繪本書名翻譯
-        Route::post('translate', [ToolController::class, 'translate']);
+        Route::get('translate', [ToolController::class, 'translate']);
         // 3.2 文字生成故事
-        Route::post('text-to-story', [ToolController::class, 'textStoryPost']);
-        Route::get('text-to-story', [ToolController::class, 'textStoryGet']);
+        Route::get('text-to-story', [ToolController::class, 'textStory']);
         // 3.3 故事生成參數
-        Route::post('story-to-prompt', [ToolController::class, 'storyPromptPost']);
-        Route::get('story-to-prompt', [ToolController::class, 'storyPromptGet']);
+        Route::get('story-to-prompt', [ToolController::class, 'storyPrompt']);
         // 3.4 參數生成圖片
-        Route::post('prompt-to-img', [ToolController::class, 'promptImgPost']);
-        Route::get('prompt-to-img', [ToolController::class, 'promptImgGet']);
+        Route::get('prompt-to-img', [ToolController::class, 'promptImg']);
     });
 });
