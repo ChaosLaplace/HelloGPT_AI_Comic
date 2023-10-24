@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Validator;
 
 use Throwable;
 // 工具模塊
@@ -42,23 +41,25 @@ class ToolController extends Controller
         
         return $this->AIStory($request);
     }
-    // 3.3 故事生成參數
+    // 3.3 故事生成提示詞
     public function storyPrompt(Request $request) {
-        return 'storyPrompt';
+        // 參數驗證
+        $paramValid = self::paramValid($request, [
+            'where' => 'bail|required|max:25',
+            'who'   => 'bail|required|max:25',
+            'what'  => 'bail|required|max:25',
+        ]);
+        if ( !$paramValid ) {
+            return self::responseFail('參數驗證');
+        }
+        
+        return $this->AIPrompt($request);
     }
-    // 3.4 參數生成圖片
+    // 3.4 提示詞生成圖片
     public function promptImg(Request $request) {
         return 'promptImg';
     }
-    // 參數驗證
-    private static function paramValid(Request $request, Array $data) {
-        $validator = Validator::make($request->all(), $data);
-        if ( $validator->fails() ) {
-            return False;
-        }
-        return True;
-    }
-    // AI 翻譯
+    // 1.AI 翻譯
     private static function AITranslate(Request $request) {
         try {
             $translate = $request->input('translate_language');
@@ -67,18 +68,25 @@ class ToolController extends Controller
 
             App::setLocale($type['0']);
             $lanBefore = __('messages.' . $type['0']);
-            $lanAfter  = __('messages.' . $type['2']);
+            $lanAfter  = __('messages.' . $type['1']);
             $messages  = [
                 ['role' => 'system', 'content' => "你是個善於將{$lanBefore}翻譯成{$lanAfter}的翻譯家"],
                 ['role' => 'user', 'content' => "請把以下{$lanBefore}翻譯為{$lanAfter} \n {$content}"],
             ];
 
-            return self::AICompletions($messages);
+            $json = self::AICompletions($messages);
+            if ( isset($json['choices'][0]['message']['content']) ) {
+                $data = [
+                    'translate_text' => trim($json['choices'][0]['message']['content'])
+                ];
+                return self::responseSuccess($data);
+            }
+            return self::responseFail();
         } catch (Throwable $e) {
             return self::errorLog($e);
         }
     }
-    // AI 生成故事
+    // 2.AI 生成故事
     private static function AIStory(Request $request) {
         try {
             $content  = $request->input('user_input');
@@ -87,7 +95,37 @@ class ToolController extends Controller
                 ['role' => 'user', 'content' => "請把以下片段的文字，延伸成一頁故事段落，不超過40字 \n {$content}"],
             ];
 
-            return self::AICompletions($messages);
+            $json = self::AICompletions($messages);
+            if ( isset($json['choices'][0]['message']['content']) ) {
+                $data = [
+                    'ch_story_ai' => trim($json['choices'][0]['message']['content'])
+                ];
+                return self::responseSuccess($data);
+            }
+            return self::responseFail();
+        } catch (Throwable $e) {
+            return self::errorLog($e);
+        }
+    }
+    // 3.AI 生成提示詞
+    private static function AIPrompt(Request $request) {
+        try {
+            $where    = $request->input('where');
+            $who      = $request->input('who');
+            $what     = $request->input('what');
+            $messages = [
+                ['role' => 'system', 'content' => "我正在使用一個名為 Midjourney 的 AI 繪圖工具，指定你成為 Midjourney 的提示生成器，你將在不同情況下用英文生成適合的 prompt，我會在主題前加上斜線 / 作為標記，當輸入 /運動鞋商品圖片，你將生成 prompt 提示詞 『Realistic true details photography of sports shoes, y2k, lively, bright colors, product photography, Sony A7R IV, clean sharp focus』"],
+                ['role' => 'user', 'content' => "請生成三段prompt 提示詞，按照順序分別是，1.描述故事發生的地方，2.那裡有誰?有什麼?，3.發生什麼事?， \n /{$where}，/{$who}，/{$what}"],
+            ];
+
+            $json = self::AICompletions($messages);
+            if ( isset($json['choices'][0]['message']['content']) ) {
+                $data = [
+                    'story_pic_prompt' => trim($json['choices'][0]['message']['content'])
+                ];
+                return self::responseSuccess($data);
+            }
+            return self::responseFail('參數生成失敗！');
         } catch (Throwable $e) {
             return self::errorLog($e);
         }
@@ -99,8 +137,8 @@ class ToolController extends Controller
             $response = Http::withHeaders([
                 'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
-                'Authorization' => 'Bearer test',
-                // 'Authorization' => 'Bearer ' . env('OPEN_AI_KEY'),
+                // 'Authorization' => 'Bearer test',
+                'Authorization' => 'Bearer ' . env('OPEN_AI_KEY'),
             ])->withOptions([
                 'verify' => false,
             ])->post($url, [
@@ -108,19 +146,7 @@ class ToolController extends Controller
                 'messages' => $messages,
             ]);
 
-            $json = $response->json();
-            if ( isset($json['error']) ) {
-                return self::responseFail( trim($json['error']['message']) );
-            }
-
-            if ( isset($json['choices'][0]['message']['content']) ) {
-                $data = [
-                    'translate_text' => trim($json['choices'][0]['message']['content'])
-                ];
-                return self::responseSuccess($data);
-            }
-
-            return self::responseFail( json_encode($json, JSON_UNESCAPED_UNICODE) );
+            return $response->json();
         } catch (Throwable $e) {
             return self::errorLog($e);
         }

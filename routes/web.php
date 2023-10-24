@@ -60,9 +60,9 @@ Route::group(['prefix' => 'api'], function () {
         Route::get('translate', [ToolController::class, 'translate']);
         // 3.2 文字生成故事
         Route::get('text-to-story', [ToolController::class, 'textStory']);
-        // 3.3 故事生成參數
+        // 3.3 故事生成提示詞
         Route::get('story-to-prompt', [ToolController::class, 'storyPrompt']);
-        // 3.4 參數生成圖片
+        // 3.4 提示詞生成圖片
         Route::get('prompt-to-img', [ToolController::class, 'promptImg']);
     });
 });

@@ -2,15 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 use Throwable;
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
+
+    // 參數驗證
+    protected static function paramValid (Request $request, Array $data) {
+        $validator = Validator::make($request->all(), $data);
+        if ( $validator->fails() ) {
+            return False;
+        }
+        return True;
+    }
 
     protected static function responseSuccess (Array $data = [], String $msg = 'Success', Bool $state = True, Int $code = 0) {
         return [
