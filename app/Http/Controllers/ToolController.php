@@ -133,8 +133,8 @@ class ToolController extends Controller
             $response = Http::withHeaders([
                 'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
-                'Authorization' => 'Bearer test',
-                // 'Authorization' => 'Bearer ' . env('OPEN_AI_KEY'),
+                // 'Authorization' => 'Bearer test',
+                'Authorization' => 'Bearer ' . env('OPEN_AI_KEY'),
             ])->withOptions([
                 'verify' => false,
             ])->post($url, [

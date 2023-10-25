@@ -9,17 +9,18 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable;
-
-    protected $table = 'hellogpt_user';
-    
+    use HasFactory, Notifiable;    
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable =   
-       ['name', 'email', 'username', 'password'];
+    protected $fillable = [
+        'name',
+        'email',
+        'username',
+        'password'
+    ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -48,7 +49,46 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public static function getUserInfoByAccount($account) {
-        return self::where(['username' => $account['username'], 'password' => $account['username']])->first();
+    public static function checkAccountExist($data) {
+        if ( isset($data['username']) ) {
+            return self::where(
+                'users_username', $data['username']
+            )->orWhere(
+                'users_email', $data['email']
+            )->exists();
+        }
+        else {
+            return self::where(
+                'users_email', $data['email']
+            )->exists();
+        }
+    }
+
+    public static function getUserInfoBId($id) {
+        return self::where(['id' => $id])->first();
+    }
+
+    public static function getUserInfoByAccount($data) {
+        return self::where([
+            'users_username' => $data['username'],
+            'users_password' => $data['password']
+        ])->first();
+    }
+
+    public static function updateUserProfileById($id, $data) {
+        return self::where('id', $id)->update([
+            'users_name'     => $data['name'],
+            'users_email'    => $data['email'],
+            'users_age'      => $data['age'],
+            'users_birthday' => $data['birthday'],
+            'users_gender'   => $data['gender'],
+            'users_avatar'   => $data['avatar']
+        ]);
+    }
+
+    public static function updateUserPWDById($id, $password) {
+        return self::where('id', $id)->update([
+            'users_password' => $password
+        ]);
     }
 }
