@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-
 use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
+
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 use Throwable;
 // 用戶模塊
@@ -15,26 +17,22 @@ class UserController extends Controller
     public function register(Request $request) {
         // 參數驗證
         $paramValid = self::paramValid($request, [
-            'name'     => 'bail|required|max:25',
-            'email'    => 'bail|required|max:50|email',
-            'username' => 'bail|required|max:50',
-            'password' => 'bail|required|max:50',
+            'name'     => 'bail|required|max:50|string',
+            'email'    => 'bail|required|max:50|string|email',
+            'username' => 'bail|required|max:50|string',
+            'password' => 'bail|required|max:50|string',
         ]);
         if ( !$paramValid ) {
             return self::responseFail('參數驗證');
         }
 
-        // // 從請求中獲取用戶提交的註冊資料
-        // $data = $request->only(['name', 'email', 'password']);
-
-        // // 創建新的用戶記錄
-        // $user = User::create($data);
-
-        // // 其他註冊相關邏輯...
-
-        // // 返回註冊成功的頁面或其他操作
-        if ( true ) {
-            return self::responseSuccess([], '註冊成功！');
+        $data = $request->only(['name', 'email', 'username', 'password']);
+        $userExists = User::where('username', $data['username'])->orWhere('email', $data['email'])->exists();
+        if ( !$userExists ) {
+            $user = User::create($data);
+            if ( $user ) {
+                return self::responseSuccess([], '註冊成功！');
+            }
         }
         return self::responseFail('此帳號已註冊！');
     }
@@ -42,23 +40,28 @@ class UserController extends Controller
     public function login(Request $request) {
         // 參數驗證
         $paramValid = self::paramValid($request, [
-            'username' => 'bail|required|max:50',
-            'password' => 'bail|required|max:50',
+            'username' => 'bail|required|max:50|string',
+            'password' => 'bail|required|max:50|string',
         ]);
         if ( !$paramValid ) {
             return self::responseFail('參數驗證');
         }
 
-        if ( true ) {
-            return self::responseSuccess([], '登入成功！');
+        $credentials = request(['username', 'password']);
+        $user = User::getUserInfoByAccount($credentials);
+        if ( $token = JWTAuth::fromUser($user) ) {
+            $data = [
+                'token' => $token
+            ];
+            return self::responseSuccess($data, '登入成功！');
         }
-        return self::responseFail('帳號或密碼錯誤！');
+        return self::responseFail('帳號或密碼錯誤！' . $user);
     }
     // 1.3 用戶忘記密碼
     public function resetpw(Request $request) {
         // 參數驗證
         $paramValid = self::paramValid($request, [
-            'email'    => 'bail|required|max:50|email',
+            'email'    => 'bail|required|max:50|string|email',
         ]);
         if ( !$paramValid ) {
             return self::responseFail('參數驗證');
@@ -73,12 +76,12 @@ class UserController extends Controller
     public function profilePost(Request $request) {
         // 參數驗證
         $paramValid = self::paramValid($request, [
-            'email'    => 'bail|required|max:50|email',
-            'name'     => 'bail|required|max:50',
-            'age'      => 'bail|required|max:10',
-            'birthday' => 'bail|required|max:25',
-            'gender'   => 'bail|required|max:10',
-            'avatar'   => 'bail|required|max:50',
+            'email'    => 'bail|required|max:50|string|email',
+            'name'     => 'bail|required|max:50|string',
+            'age'      => 'bail|required|size:10|integer',
+            'birthday' => 'bail|required|max:25|string',
+            'gender'   => 'bail|required|size:10|integer',
+            'avatar'   => 'bail|required|max:50|string',
         ]);
         if ( !$paramValid ) {
             return self::responseFail('參數驗證');
@@ -108,8 +111,8 @@ class UserController extends Controller
     public function changepwd(Request $request) {
         // 參數驗證
         $paramValid = self::paramValid($request, [
-            'password_old' => 'bail|required|max:50',
-            'password_new' => 'bail|required|max:50',
+            'password_old' => 'bail|required|max:50|string',
+            'password_new' => 'bail|required|max:50|string',
         ]);
         if ( !$paramValid ) {
             return self::responseFail('參數驗證');

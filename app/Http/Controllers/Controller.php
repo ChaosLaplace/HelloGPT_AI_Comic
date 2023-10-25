@@ -25,21 +25,21 @@ class Controller extends BaseController
     }
 
     protected static function responseSuccess (Array $data = [], String $msg = 'Success', Bool $state = True, Int $code = 0) {
-        return [
+        return response()->json([
             'data'  => $data,
             'msg'   => $msg,
             'state' => $state,
             'code'  => $code
-        ];
+        ]);
     }
 
     protected static function responseFail (String $msg = '網路錯誤，請稍後再試！', Array $data = [], Bool $state = False, Int $code = -1) {
-        return [
+        return response()->json([
             'msg'   => $msg,
             'data'  => $data,
             'state' => $state,
             'code'  => $code
-        ];
+        ]);
     }
 
     protected static function errorLog (Throwable $e) {

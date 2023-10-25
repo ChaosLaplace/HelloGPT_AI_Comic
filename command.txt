@@ -9,8 +9,17 @@ php artisan make:controller UserController
 php artisan make:controller BookController
 php artisan make:controller ToolController
 
+安裝 JWT
+composer require tymon/jwt-auth
+php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
+php artisan jwt:secret
+
 composer.json config 關閉 SSL 憑證
 "disable-tls": false
+
+加 ssh 密鑰
+eval `ssh-agent`
+ssh-add /home/admin/.ssh/id_rsa
 
 安裝 OpenSSL
 # 產生 CA 私鑰 (ca.key)

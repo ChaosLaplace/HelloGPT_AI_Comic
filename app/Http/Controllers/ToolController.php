@@ -12,16 +12,12 @@ use Throwable;
 // 工具模塊
 class ToolController extends Controller
 {
-    // 取得 CSRF
-    public function getCSRF() {
-        return csrf_token();
-    }
     // 3.1 繪本書名翻譯
     public function translate(Request $request) {
         // 參數驗證
         $paramValid = self::paramValid($request, [
-            'translate_language' => 'bail|required|max:15',
-            'input_text'         => 'bail|required|max:100',
+            'translate_language' => 'bail|required|max:15|string',
+            'input_text'         => 'bail|required|max:100|string',
         ]);
         if ( !$paramValid ) {
             return self::responseFail('參數驗證');
@@ -33,7 +29,7 @@ class ToolController extends Controller
     public function textStory(Request $request) {
         // 參數驗證
         $paramValid = self::paramValid($request, [
-            'user_input' => 'bail|required|max:255',
+            'user_input' => 'bail|required|max:255|string',
         ]);
         if ( !$paramValid ) {
             return self::responseFail('參數驗證');
@@ -45,9 +41,9 @@ class ToolController extends Controller
     public function storyPrompt(Request $request) {
         // 參數驗證
         $paramValid = self::paramValid($request, [
-            'where' => 'bail|required|max:25',
-            'who'   => 'bail|required|max:25',
-            'what'  => 'bail|required|max:25',
+            'where' => 'bail|required|max:25|string',
+            'who'   => 'bail|required|max:25|string',
+            'what'  => 'bail|required|max:25|string',
         ]);
         if ( !$paramValid ) {
             return self::responseFail('參數驗證');
@@ -137,8 +133,8 @@ class ToolController extends Controller
             $response = Http::withHeaders([
                 'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
-                // 'Authorization' => 'Bearer test',
-                'Authorization' => 'Bearer ' . env('OPEN_AI_KEY'),
+                'Authorization' => 'Bearer test',
+                // 'Authorization' => 'Bearer ' . env('OPEN_AI_KEY'),
             ])->withOptions([
                 'verify' => false,
             ])->post($url, [
