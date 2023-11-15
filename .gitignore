@@ -18,3 +18,5 @@ yarn-error.log
 /.idea
 /.vscode
 nginx.htaccess
+note.txt
+/public/apidoc

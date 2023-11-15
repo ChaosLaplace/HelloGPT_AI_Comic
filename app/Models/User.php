@@ -52,14 +52,14 @@ class User extends Authenticatable implements JWTSubject
     public static function checkAccountExist($data) {
         if ( isset($data['username']) ) {
             return self::where(
-                'users_username', $data['username']
+                'name', $data['username']
             )->orWhere(
-                'users_email', $data['email']
+                'email', $data['email']
             )->exists();
         }
         else {
             return self::where(
-                'users_email', $data['email']
+                'email', $data['email']
             )->exists();
         }
     }
@@ -70,25 +70,25 @@ class User extends Authenticatable implements JWTSubject
 
     public static function getUserInfoByAccount($data) {
         return self::where([
-            'users_username' => $data['username'],
-            'users_password' => $data['password']
+            'name'     => $data['username'],
+            'password' => $data['password']
         ])->first();
     }
 
     public static function updateUserProfileById($id, $data) {
         return self::where('id', $id)->update([
-            'users_name'     => $data['name'],
-            'users_email'    => $data['email'],
-            'users_age'      => $data['age'],
-            'users_birthday' => $data['birthday'],
-            'users_gender'   => $data['gender'],
-            'users_avatar'   => $data['avatar']
+            'name'     => $data['name'],
+            'email'    => $data['email'],
+            'age'      => $data['age'],
+            'birthday' => $data['birthday'],
+            'gender'   => $data['gender'],
+            'avatar'   => $data['avatar']
         ]);
     }
 
     public static function updateUserPWDById($id, $password) {
         return self::where('id', $id)->update([
-            'users_password' => $password
+            'password' => $password
         ]);
     }
 }
