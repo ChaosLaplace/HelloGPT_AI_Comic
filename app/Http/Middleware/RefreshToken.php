@@ -6,8 +6,12 @@ use Closure;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Http\Middleware\BaseMiddleware;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 // 注意，我們要繼承的是 jwt 的 BaseMiddleware
 class RefreshToken extends BaseMiddleware
 {
@@ -21,10 +25,12 @@ class RefreshToken extends BaseMiddleware
      *
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next)
     {
+        Log::info( json_encode($request, JSON_UNESCAPED_UNICODE) );
         // 檢查此次請求中是否帶有 token，如果沒有則拋出異常。
         $this->checkForToken($request);
+        
         // 使用 try 包裹，以捕捉 token 過期所拋出的 TokenExpiredException 異常
         try {
             // 偵測使用者的登入狀態，如果正常則透過

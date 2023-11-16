@@ -70,7 +70,7 @@ class User extends Authenticatable implements JWTSubject
 
     public static function getUserInfoByAccount($data) {
         return self::where([
-            'name'     => $data['username'],
+            'username' => $data['username'],
             'password' => $data['password']
         ])->first();
     }

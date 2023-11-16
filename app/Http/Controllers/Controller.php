@@ -42,6 +42,10 @@ class Controller extends BaseController
         ]);
     }
 
+    protected static function infoLog ($data) {
+        Log::info( json_encode($data, JSON_UNESCAPED_UNICODE) );
+    }
+
     protected static function errorLog (Throwable $e) {
         $errorData = [
             'message' => $e->getMessage(),

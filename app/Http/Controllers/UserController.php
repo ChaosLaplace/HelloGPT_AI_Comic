@@ -20,6 +20,7 @@ class UserController extends Controller
     #[
         Apidoc\Title("用戶註冊"),
         Apidoc\Tag("用戶模塊"),
+        Apidoc\Author("Ernest"),
         Apidoc\Method("POST"),
         Apidoc\Group("bese"),
         Apidoc\Url("api/user/register"),
@@ -44,7 +45,7 @@ class UserController extends Controller
             'password' => 'bail|required|max:50|string',
         ]);
         if ( !$paramValid ) {
-            return self::responseFail('參數驗證');
+            return self::responseFail('參數驗證錯誤');
         }
 
         try {
@@ -66,6 +67,7 @@ class UserController extends Controller
     #[
         Apidoc\Title("用戶登入"),
         Apidoc\Tag("用戶模塊"),
+        Apidoc\Author("Ernest"),
         Apidoc\Method("POST"),
         Apidoc\Group("bese"),
         Apidoc\Url("api/user/login"),
@@ -86,7 +88,7 @@ class UserController extends Controller
             'password' => 'bail|required|max:50|string',
         ]);
         if ( !$paramValid ) {
-            return self::responseFail('參數驗證');
+            return self::responseFail('參數驗證錯誤');
         }
 
         try {
@@ -104,14 +106,13 @@ class UserController extends Controller
             return self::errorLog($e);
         }
     }
-    // 1.3 用戶忘記密碼
+    // 用戶忘記密碼
     public function resetpw(Request $request) {
-        // 參數驗證
         $paramValid = self::paramValid($request, [
             'email' => 'bail|required|max:50|string|email',
         ]);
         if ( !$paramValid ) {
-            return self::responseFail('參數驗證');
+            return self::responseFail('參數驗證錯誤');
         }
 
         try {
@@ -124,9 +125,29 @@ class UserController extends Controller
             return self::errorLog($e);
         }
     }
-    // 1.4 用戶資料獲取與修改
-    public function profilePost(Request $request) {
-        // 參數驗證
+    #[
+        Apidoc\Title("用戶資料修改"),
+        Apidoc\Tag("用戶模塊"),
+        Apidoc\Author("Ernest"),
+        Apidoc\Method("POST"),
+        Apidoc\Group("bese"),
+        Apidoc\Url("api/user/profile"),
+        Apidoc\Query(name: "name", type: "string", require: true, desc: "姓名"),
+        Apidoc\Query(name: "email", type: "string", require: true, desc: "信箱"),
+        Apidoc\Query(name: "age", type: "string", require: true, desc: "年齡"),
+        Apidoc\Query(name: "birthday", type: "string", require: true, desc: "生日"),
+        Apidoc\Query(name: "gender", type: "string", require: true, desc: "性別"),
+        Apidoc\Query(name: "avatar", type: "string", require: true, desc: "頭像"),
+        Apidoc\ResponseSuccess(name: "code", type: "int", desc: "成功狀態碼 0", default: 0, require: true),
+        Apidoc\ResponseSuccess(name: "state", type: "int", desc: "1 為成功", default: 1, require: true),
+        Apidoc\ResponseSuccess(name: "msg", type: "string", desc: "返回消息", require: true),
+        Apidoc\ResponseSuccess(name: "data", type: "array", desc: "返回資料", require: true),
+        Apidoc\ResponseError(name: "code", type: "int", desc: "失敗狀態碼 -1", default: -1, require: true),
+        Apidoc\ResponseError(name: "state", type: "int", desc: "0 為失敗", default: 0, require: true),
+        Apidoc\ResponseError(name: "msg", type: "string", desc: "返回消息", require: true),
+        Apidoc\ResponseError(name: "data", type: "array", desc: "返回資料", require: true),
+    ]
+    public function saveProfile(Request $request) {
         $paramValid = self::paramValid($request, [
             'name'     => 'bail|required|max:50|string',
             'email'    => 'bail|required|max:50|string|email',
@@ -136,7 +157,7 @@ class UserController extends Controller
             'avatar'   => 'bail|required|max:200|string',
         ]);
         if ( !$paramValid ) {
-            return self::responseFail('參數驗證');
+            return self::responseFail('參數驗證錯誤');
         }
 
         try {
@@ -150,14 +171,37 @@ class UserController extends Controller
             return self::errorLog($e);
         }
     }
-    public function profileGet() {
+    #[
+        Apidoc\Title("用戶資料獲取"),
+        Apidoc\Tag("用戶模塊"),
+        Apidoc\Author("Ernest"),
+        Apidoc\Method("GET"),
+        Apidoc\Group("bese"),
+        Apidoc\Url("api/user/profile"),
+        Apidoc\ResponseSuccess(name: "code", type: "int", desc: "成功狀態碼 0", default: 0, require: true),
+        Apidoc\ResponseSuccess(name: "state", type: "int", desc: "1 為成功", default: 1, require: true),
+        Apidoc\ResponseSuccess(name: "msg", type: "string", desc: "返回消息", require: true),
+        Apidoc\ResponseSuccess(name: "data", type: "array", desc: "返回資料", require: true, childrenType: "array", children: [
+            ['name' => 'name', 'type' => 'string', 'require' => true, 'desc' => '姓名'],
+            ['name' => 'email', 'type' =>'int', 'require' => true, 'desc' => '信箱'],
+            ['name' => 'age', 'type' => 'string', 'require' => true, 'desc' => '年齡'],
+            ['name' => 'birthday', 'type' =>'int', 'require' => true, 'desc' => '生日'],
+            ['name' => 'gender', 'type' => 'string', 'require' => true, 'desc' => '性別'],
+            ['name' => 'avatar', 'type' => 'string', 'require' => true, 'desc' => '頭像'],
+        ]),
+        Apidoc\ResponseError(name: "code", type: "int", desc: "失敗狀態碼 -1", default: -1, require: true),
+        Apidoc\ResponseError(name: "state", type: "int", desc: "0 為失敗", default: 0, require: true),
+        Apidoc\ResponseError(name: "msg", type: "string", desc: "返回消息", require: true),
+        Apidoc\ResponseError(name: "data", type: "array", desc: "返回資料", require: true),
+    ]
+    public function getProfile() {
+        return self::responseFail('無此註冊信箱！');
         try {
             $userInfo = Auth::user();
             if ( $userInfo ) {
                 $data = [
-                    'username' => $userInfo['name'],
-                    'email'    => $userInfo['email'],
                     'name'     => $userInfo['name'],
+                    'email'    => $userInfo['email'],
                     'age'      => $userInfo['age'],
                     'birthday' => $userInfo['birthday'],
                     'gender'   => $userInfo['gender'],
@@ -170,15 +214,14 @@ class UserController extends Controller
             return self::errorLog($e);
         }
     }
-    // 1.5 用戶修改密碼
+    // 用戶修改密碼
     public function changepwd(Request $request) {
-        // 參數驗證
         $paramValid = self::paramValid($request, [
             'password_old' => 'bail|required|max:50|string',
             'password_new' => 'bail|required|max:50|string',
         ]);
         if ( !$paramValid ) {
-            return self::responseFail('參數驗證');
+            return self::responseFail('參數驗證錯誤');
         }
 
         try {
@@ -203,7 +246,7 @@ class UserController extends Controller
             return self::errorLog($e);
         }
     }
-    // 1.6 用戶第三方登入 Google api
+    // 用戶第三方登入 Google api
     public function googlelogin(Request $request) {
         return 'googlelogin';
     }

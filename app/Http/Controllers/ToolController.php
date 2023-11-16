@@ -12,50 +12,47 @@ use Throwable;
 // 工具模塊
 class ToolController extends Controller
 {
-    // 3.1 繪本書名翻譯
+    // 繪本書名翻譯
     public function translate(Request $request) {
-        // 參數驗證
         $paramValid = self::paramValid($request, [
             'translate_language' => 'bail|required|max:15|string',
             'input_text'         => 'bail|required|max:100|string',
         ]);
         if ( !$paramValid ) {
-            return self::responseFail('參數驗證');
+            return self::responseFail('參數驗證錯誤');
         }
 
         return $this->AITranslate($request);
     }
-    // 3.2 文字生成故事
+    // 文字生成故事
     public function textStory(Request $request) {
-        // 參數驗證
         $paramValid = self::paramValid($request, [
             'user_input' => 'bail|required|max:255|string',
         ]);
         if ( !$paramValid ) {
-            return self::responseFail('參數驗證');
+            return self::responseFail('參數驗證錯誤');
         }
         
         return $this->AIStory($request);
     }
-    // 3.3 故事生成提示詞
+    // 故事生成提示詞
     public function storyPrompt(Request $request) {
-        // 參數驗證
         $paramValid = self::paramValid($request, [
             'where' => 'bail|required|max:25|string',
             'who'   => 'bail|required|max:25|string',
             'what'  => 'bail|required|max:25|string',
         ]);
         if ( !$paramValid ) {
-            return self::responseFail('參數驗證');
+            return self::responseFail('參數驗證錯誤');
         }
         
         return $this->AIPrompt($request);
     }
-    // 3.4 提示詞生成圖片
+    // 提示詞生成圖片
     public function promptImg(Request $request) {
         return 'promptImg';
     }
-    // 1.AI 翻譯
+    // AI 翻譯
     private static function AITranslate(Request $request) {
         try {
             $translate = $request->input('translate_language');
@@ -82,7 +79,7 @@ class ToolController extends Controller
             return self::errorLog($e);
         }
     }
-    // 2.AI 生成故事
+    // AI 生成故事
     private static function AIStory(Request $request) {
         try {
             $content  = $request->input('user_input');
@@ -103,7 +100,7 @@ class ToolController extends Controller
             return self::errorLog($e);
         }
     }
-    // 3.AI 生成提示詞
+    // AI 生成提示詞
     private static function AIPrompt(Request $request) {
         try {
             $where    = $request->input('where');
