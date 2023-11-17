@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\SeleniumController;
 use App\Http\Controllers\ToolController;
 use App\Http\Controllers\UserController;
 
@@ -22,6 +23,15 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// 模擬用戶發文
+Route::get('selenium/Eyny', [SeleniumController::class, 'Eyny']);
+
+
+
+
+
+
 
 // 用戶註冊
 Route::post('user/register', [UserController::class, 'register']);

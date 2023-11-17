@@ -11,32 +11,10 @@ use Illuminate\Support\Facades\Hash;
 
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-use hg\apidoc\annotation as Apidoc;
 
 use Throwable;
-#[Apidoc\Title("用戶模塊")]
 class UserController extends Controller
 {
-    #[
-        Apidoc\Title("用戶註冊"),
-        Apidoc\Tag("用戶模塊"),
-        Apidoc\Author("Ernest"),
-        Apidoc\Method("POST"),
-        Apidoc\Group("bese"),
-        Apidoc\Url("api/user/register"),
-        Apidoc\Query(name: "name", type: "string", require: true, desc: "姓名"),
-        Apidoc\Query(name: "email", type: "string", require: true, desc: "信箱"),
-        Apidoc\Query(name: "username", type: "string", require: true, desc: "用戶帳號"),
-        Apidoc\Query(name: "password", type: "string", require: true, desc: "用戶密碼"),
-        Apidoc\ResponseSuccess(name: "code", type: "int", desc: "成功狀態碼 0", default: 0, require: true),
-        Apidoc\ResponseSuccess(name: "state", type: "int", desc: "1 為成功", default: 1, require: true),
-        Apidoc\ResponseSuccess(name: "msg", type: "string", desc: "返回消息", require: true),
-        Apidoc\ResponseSuccess(name: "data", type: "array", desc: "返回資料", require: true),
-        Apidoc\ResponseError(name: "code", type: "int", desc: "失敗狀態碼 -1", default: -1, require: true),
-        Apidoc\ResponseError(name: "state", type: "int", desc: "0 為失敗", default: 0, require: true),
-        Apidoc\ResponseError(name: "msg", type: "string", desc: "返回消息", require: true),
-        Apidoc\ResponseError(name: "data", type: "array", desc: "返回資料", require: true),
-    ]
     public function register(Request $request) {
         $paramValid = self::paramValid($request, [
             'name'     => 'bail|required|max:50|string',
@@ -64,24 +42,7 @@ class UserController extends Controller
             return self::errorLog($e);
         }
     }
-    #[
-        Apidoc\Title("用戶登入"),
-        Apidoc\Tag("用戶模塊"),
-        Apidoc\Author("Ernest"),
-        Apidoc\Method("POST"),
-        Apidoc\Group("bese"),
-        Apidoc\Url("api/user/login"),
-        Apidoc\Query(name: "username", type: "string", require: true, desc: "用戶帳號"),
-        Apidoc\Query(name: "password", type: "string", require: true, desc: "用戶密碼"),
-        Apidoc\ResponseSuccess(name: "code", type: "int", desc: "成功狀態碼 0", default: 0, require: true),
-        Apidoc\ResponseSuccess(name: "state", type: "int", desc: "1 為成功", default: 1, require: true),
-        Apidoc\ResponseSuccess(name: "msg", type: "string", desc: "返回消息", require: true),
-        Apidoc\ResponseSuccess(name: "data", type: "array", desc: "返回資料", require: true),
-        Apidoc\ResponseError(name: "code", type: "int", desc: "失敗狀態碼 -1", default: -1, require: true),
-        Apidoc\ResponseError(name: "state", type: "int", desc: "0 為失敗", default: 0, require: true),
-        Apidoc\ResponseError(name: "msg", type: "string", desc: "返回消息", require: true),
-        Apidoc\ResponseError(name: "data", type: "array", desc: "返回資料", require: true),
-    ]
+
     public function login(Request $request) {
         $paramValid = self::paramValid($request, [
             'username' => 'bail|required|max:50|string',
